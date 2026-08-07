@@ -1,26 +1,13 @@
 package com.smartdesk.ticket.service;
 
-import com.smartdesk.ticket.entity.Ticket;
-import com.smartdesk.ticket.repository.TicketRepository;
-import org.springframework.stereotype.Service;
+import com.smartdesk.ticket.dto.*;
 
 import java.util.List;
 
-@Service
-public class TicketService {
+public interface TicketService {
 
-    private final TicketRepository repository;
+    TicketResponse create(TicketRequest request);
 
-    public TicketService(TicketRepository repository) {
-        this.repository = repository;
-    }
-
-    public Ticket save(Ticket ticket) {
-        return repository.save(ticket);
-    }
-
-    public List<Ticket> findAll() {
-        return repository.findAll();
-    }
+    List<TicketResponse> findAll();
 
 }
