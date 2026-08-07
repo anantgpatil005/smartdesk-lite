@@ -1,10 +1,26 @@
+import { useState } from "react";
+
 function App() {
+
+  const [message, setMessage] = useState("");
+
+  async function callBackend() {
+    const response = await fetch("http://localhost:8090/hello");
+    const text = await response.text();
+    setMessage(text);
+  }
+
   return (
-    <main style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
+    <div style={{ padding: "20px" }}>
       <h1>SmartDesk Lite</h1>
-      <p>The frontend is running.</p>
-    </main>
-  )
+
+      <button onClick={callBackend}>
+        Connect Ticket Service
+      </button>
+
+      <h2>{message}</h2>
+    </div>
+  );
 }
 
-export default App
+export default App;
