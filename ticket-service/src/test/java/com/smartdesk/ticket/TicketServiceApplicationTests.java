@@ -1,4 +1,4 @@
-package com.agp.ai.chatbot;
+package com.smartdesk.ticket;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

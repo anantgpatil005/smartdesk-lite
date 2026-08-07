@@ -1,26 +1,41 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import api from "./api";
+import CreateTicket from "./components/CreateTicket";
+import TicketList from "./components/TicketList";
 
 function App() {
 
-  const [message, setMessage] = useState("");
+  const [tickets, setTickets] = useState([]);
 
-  async function callBackend() {
-    const response = await fetch("http://localhost:8090/hello");
-    const text = await response.text();
-    setMessage(text);
-  }
+   async function loadTickets() {
+
+        const response = await api.get("/tickets");
+
+        setTickets(response.data);
+
+    }
+
+    useEffect(() => {
+
+        loadTickets();
+
+    }, []);
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>SmartDesk Lite</h1>
 
-      <button onClick={callBackend}>
-        Connect Ticket Service
-      </button>
+        <div style={{padding:"20px"}}>
 
-      <h2>{message}</h2>
-    </div>
-  );
+            <h1>SmartDesk Lite</h1>
+
+            <CreateTicket refresh={loadTickets}/>
+
+            <hr/>
+
+            <TicketList tickets={tickets}/>
+
+        </div>
+
+    );
 }
 
 export default App;
