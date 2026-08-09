@@ -1,6 +1,6 @@
 package com.smartdesk.ticket.producer;
 
-import com.smartdesk.ticket.event.TicketCreatedEvent;
+import com.smartdesk.common.event.TicketCreatedEvent;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 

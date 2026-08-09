@@ -1,4 +1,4 @@
-package com.smartdesk.ticket.event;
+package com.smartdesk.common.event;
 
 import lombok.*;
 

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import com.smartdesk.ticket.dto.TicketRequest;
 import com.smartdesk.ticket.dto.TicketResponse;
 import com.smartdesk.ticket.entity.Ticket;
-import com.smartdesk.ticket.event.TicketCreatedEvent;
+import com.smartdesk.common.event.TicketCreatedEvent;
 import com.smartdesk.ticket.mapper.TicketMapper;
 import com.smartdesk.ticket.producer.TicketProducer;
 import com.smartdesk.ticket.repository.TicketRepository;

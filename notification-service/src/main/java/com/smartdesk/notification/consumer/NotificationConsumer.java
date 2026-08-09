@@ -1,7 +1,7 @@
 package com.smartdesk.notification.consumer;
 
 import com.smartdesk.notification.entity.Notification;
-import com.smartdesk.notification.event.TicketCreatedEvent;
+import com.smartdesk.common.event.TicketCreatedEvent;
 import com.smartdesk.notification.repository.NotificationRepository;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
