@@ -45,6 +45,12 @@ pipeline {
             }
         }
 		
+		stage('Docker Build Frontend') {
+			steps {
+				bat 'cd frontend && docker build -t smartdesk-frontend:latest .'
+			}
+		}
+		
 		stage('Verify Docker') {
             steps {
                 bat 'docker --version'
