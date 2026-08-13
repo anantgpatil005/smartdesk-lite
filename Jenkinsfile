@@ -33,6 +33,11 @@ pipeline {
                 bat 'cd notification-service && mvn clean package'
             }
         }
+		stage('Docker Build Notification Service') {
+			steps {
+				bat 'cd notification-service && docker build -t smartdesk-notification-service:latest .'
+			}
+		}
 		
 		stage('Build Frontend') {
             steps {
