@@ -33,6 +33,13 @@ pipeline {
                 bat 'cd frontend && npm install && npm run build'
             }
         }
+		
+		stage('Verify Docker') {
+            steps {
+                bat 'docker --version'
+                bat 'docker ps'
+            }
+        }
 
     }
 }
