@@ -22,6 +22,12 @@ pipeline {
             }
         }
 		
+		stage('Docker Build Ticket Service') {
+			steps {
+				bat 'cd ticket-service && docker build -t smartdesk-ticket-service:latest .'
+			}
+		}
+		
 		stage('Build Notification Service') {
             steps {
                 bat 'cd notification-service && mvn clean package'
