@@ -80,10 +80,9 @@ pipeline {
 						usernameVariable: 'DOCKER_USERNAME',
 						passwordVariable: 'DOCKER_PASSWORD'
 					)
-				]) 
-				{
-					// Direct PowerShell login avoiding Windows pipe/encoding bugs
-					powershell 'docker login -u $env:DOCKER_USERNAME -p $env:DOCKER_PASSWORD'
+				]) {
+					// Uses PowerShell Write-Output to cleanly pipe the PAT into stdin
+					powershell 'Write-Output $env:DOCKER_PASSWORD | docker login -u $env:DOCKER_USERNAME --password-stdin'
 
 					bat 'docker tag smartdesk-ticket-service:latest %DOCKER_USERNAME%/smartdesk-ticket-service:latest'
 					bat 'docker tag smartdesk-notification-service:latest %DOCKER_USERNAME%/smartdesk-notification-service:latest'
