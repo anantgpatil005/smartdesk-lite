@@ -1,5 +1,4 @@
 pipeline {
-
     agent any
 
     stages {
@@ -9,75 +8,92 @@ pipeline {
                 checkout scm
             }
         }
-		
-		stage('Build Common') {
+
+        stage('Build Common') {
             steps {
-                bat 'cd common && mvn clean install'
+                dir('common') {
+                    bat 'mvn clean install'
+                }
             }
         }
-		
-		stage('Build Ticket Service') {
+
+        stage('Build Ticket Service') {
             steps {
-                bat 'cd ticket-service && mvn clean package'
+                dir('ticket-service') {
+                    bat 'mvn clean package'
+                }
             }
         }
-		
-		stage('Docker Build Ticket Service') {
-			steps {
-				bat 'cd ticket-service && docker build -t smartdesk-ticket-service:latest .'
-			}
-		}
-		
-		stage('Build Notification Service') {
+
+        stage('Docker Build Ticket Service') {
             steps {
-                bat 'cd notification-service && mvn clean package'
+                dir('ticket-service') {
+                    bat 'docker build -t smartdesk-ticket-service:latest .'
+                }
             }
         }
-		stage('Docker Build Notification Service') {
-			steps {
-				bat 'cd notification-service && docker build -t smartdesk-notification-service:latest .'
-			}
-		}
-		
-		stage('Build Frontend') {
+
+        stage('Build Notification Service') {
             steps {
-                bat 'cd frontend && npm install && npm run build'
+                dir('notification-service') {
+                    bat 'mvn clean package'
+                }
             }
         }
-		
-		stage('Docker Build Frontend') {
-			steps {
-				bat 'cd frontend && docker build -t smartdesk-frontend:latest .'
-			}
-		}
-		
-		stage('Verify Docker') {
+
+        stage('Docker Build Notification Service') {
+            steps {
+                dir('notification-service') {
+                    bat 'docker build -t smartdesk-notification-service:latest .'
+                }
+            }
+        }
+
+        stage('Build Frontend') {
+            steps {
+                dir('frontend') {
+                    bat 'npm install && npm run build'
+                }
+            }
+        }
+
+        stage('Docker Build Frontend') {
+            steps {
+                dir('frontend') {
+                    bat 'docker build -t smartdesk-frontend:latest .'
+                }
+            }
+        }
+
+        stage('Verify Docker') {
             steps {
                 bat 'docker --version'
                 bat 'docker ps'
             }
         }
-		
-		stage('Push Docker Images') {
-			steps {
-				withCredentials([
-					usernamePassword(
-						credentialsId: 'dockerhub-credentials',
-						usernameVariable: 'DOCKER_USERNAME',
-						passwordVariable: 'DOCKER_PASSWORD'
-					)
-				]) {
-				bat 'echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin'
 
-				bat 'docker tag smartdesk-ticket-service:latest %DOCKER_USERNAME%/smartdesk-ticket-service:latest'
-				bat 'docker tag smartdesk-notification-service:latest %DOCKER_USERNAME%/smartdesk-notification-service:latest'
-				bat 'docker tag smartdesk-frontend:latest %DOCKER_USERNAME%/smartdesk-frontend:latest'
+        stage('Push Docker Images') {
+            steps {
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'dockerhub-credentials',
+                        usernameVariable: 'DOCKER_USERNAME',
+                        passwordVariable: 'DOCKER_PASSWORD'
+                    )
+                ]) {
+                    // Fixed variable names (%DOCKER_PASSWORD% & %DOCKER_USERNAME%)
+                    // Removed trailing space before pipe to prevent passing extra space to password
+                    bat 'echo %DOCKER_PASSWORD%| docker login -u %DOCKER_USERNAME% --password-stdin'
 
-				bat 'docker push %DOCKER_USERNAME%/smartdesk-ticket-service:latest'
-				bat 'docker push %DOCKER_USERNAME%/smartdesk-notification-service:latest'
-				bat 'docker push %DOCKER_USERNAME%/smartdesk-frontend:latest'
+                    bat 'docker tag smartdesk-ticket-service:latest %DOCKER_USERNAME%/smartdesk-ticket-service:latest'
+                    bat 'docker tag smartdesk-notification-service:latest %DOCKER_USERNAME%/smartdesk-notification-service:latest'
+                    bat 'docker tag smartdesk-frontend:latest %DOCKER_USERNAME%/smartdesk-frontend:latest'
+
+                    bat 'docker push %DOCKER_USERNAME%/smartdesk-ticket-service:latest'
+                    bat 'docker push %DOCKER_USERNAME%/smartdesk-notification-service:latest'
+                    bat 'docker push %DOCKER_USERNAME%/smartdesk-frontend:latest'
+                }
+            }
         }
     }
 }
-
-    
