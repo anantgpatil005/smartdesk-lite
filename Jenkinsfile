@@ -73,27 +73,27 @@ pipeline {
         }
 
         stage('Push Docker Images') {
-            steps {
-                withCredentials([
-                    usernamePassword(
-                        credentialsId: 'dockerhub-credentials',
-                        usernameVariable: 'DOCKER_USERNAME',
-                        passwordVariable: 'DOCKER_PASSWORD'
-                    )
-                ]) {
-                    // Fixed variable names (%DOCKER_PASSWORD% & %DOCKER_USERNAME%)
-                    // Removed trailing space before pipe to prevent passing extra space to password
-                    bat 'echo %DOCKER_PASSWORD%| docker login -u %DOCKER_USERNAME% --password-stdin'
+			steps {
+				withCredentials([
+					usernamePassword(
+						credentialsId: 'dockerhub-credentials',
+						usernameVariable: 'DOCKER_USERNAME',
+						passwordVariable: 'DOCKER_PASSWORD'
+					)
+				]) 
+				{
+					// Direct PowerShell login avoiding Windows pipe/encoding bugs
+					powershell 'docker login -u $env:DOCKER_USERNAME -p $env:DOCKER_PASSWORD'
 
-                    bat 'docker tag smartdesk-ticket-service:latest %DOCKER_USERNAME%/smartdesk-ticket-service:latest'
-                    bat 'docker tag smartdesk-notification-service:latest %DOCKER_USERNAME%/smartdesk-notification-service:latest'
-                    bat 'docker tag smartdesk-frontend:latest %DOCKER_USERNAME%/smartdesk-frontend:latest'
+					bat 'docker tag smartdesk-ticket-service:latest %DOCKER_USERNAME%/smartdesk-ticket-service:latest'
+					bat 'docker tag smartdesk-notification-service:latest %DOCKER_USERNAME%/smartdesk-notification-service:latest'
+					bat 'docker tag smartdesk-frontend:latest %DOCKER_USERNAME%/smartdesk-frontend:latest'
 
-                    bat 'docker push %DOCKER_USERNAME%/smartdesk-ticket-service:latest'
-                    bat 'docker push %DOCKER_USERNAME%/smartdesk-notification-service:latest'
-                    bat 'docker push %DOCKER_USERNAME%/smartdesk-frontend:latest'
-                }
-            }
-        }
+					bat 'docker push %DOCKER_USERNAME%/smartdesk-ticket-service:latest'
+					bat 'docker push %DOCKER_USERNAME%/smartdesk-notification-service:latest'
+					bat 'docker push %DOCKER_USERNAME%/smartdesk-frontend:latest'
+				}
+			}
+		}
     }
 }
