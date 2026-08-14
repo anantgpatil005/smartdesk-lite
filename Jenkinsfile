@@ -67,8 +67,7 @@ pipeline {
 						passwordVariable: 'DOCKER_PASSWORD'
 					)
 				]) {
-
-				bat 'docker login -u %DOCKER_USERNAME% -p %DOCKER_PASSWORD%'
+				bat 'echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin'
 
 				bat 'docker tag smartdesk-ticket-service:latest %DOCKER_USERNAME%/smartdesk-ticket-service:latest'
 				bat 'docker tag smartdesk-notification-service:latest %DOCKER_USERNAME%/smartdesk-notification-service:latest'
