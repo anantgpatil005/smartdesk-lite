@@ -66,49 +66,25 @@ pipeline {
         }
 
         stage('Verify Docker') {
-            steps {
-                bat 'docker --version'
-                bat 'docker ps'
-				withCredentials([
+            stage('DEBUG - Jenkins Environment') {
+    steps {
+        withCredentials([
             usernamePassword(
                 credentialsId: 'dockerhub-credentials',
                 usernameVariable: 'DOCKER_USERNAME',
                 passwordVariable: 'DOCKER_PASSWORD'
             )
         ]) {
-             bat '''
-            echo ==========================
-            echo WINDOWS USER
-            echo ==========================
-            whoami
+            bat '''
+                echo ==========================
+                echo DOCKER LOGIN
+                echo ==========================
 
-            echo.
-            echo ==========================
-            echo DOCKER EXECUTABLE
-            echo ==========================
-            where docker
-            docker --version
-
-            echo.
-            echo ==========================
-            echo DOCKER CONTEXT
-            echo ==========================
-            docker context show
-
-            echo.
-            echo ==========================
-            echo DOCKER CONFIG
-            echo ==========================
-            echo DOCKER_CONFIG=[%DOCKER_CONFIG%]
-
-            echo.
-            echo ==========================
-            echo DOCKER INFO
-            echo ==========================
-            docker info
-        '''
+                powershell -NoProfile -Command "$env:DOCKER_PASSWORD | docker login --username $env:DOCKER_USERNAME --password-stdin"
+            '''
         }
-            }
+    }
+}
         }
 
       
