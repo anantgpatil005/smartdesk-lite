@@ -66,27 +66,23 @@ pipeline {
         }
 
         stage('Verify Docker') {
-            stage('DEBUG - Jenkins Environment') {
-    steps {
-        withCredentials([
-            usernamePassword(
-                credentialsId: 'dockerhub-credentials',
-                usernameVariable: 'DOCKER_USERNAME',
-                passwordVariable: 'DOCKER_PASSWORD'
-            )
-        ]) {
-            bat '''
-                echo ==========================
-                echo DOCKER LOGIN
-                echo ==========================
+            steps {
+				withCredentials([
+					usernamePassword(
+						credentialsId: 'dockerhub-credentials',
+						usernameVariable: 'DOCKER_USERNAME',
+						passwordVariable: 'DOCKER_PASSWORD'
+					)
+				]) {
+					bat '''
+						echo ==========================
+						echo DOCKER LOGIN
+						echo ==========================
 
-                powershell -NoProfile -Command "$env:DOCKER_PASSWORD | docker login --username $env:DOCKER_USERNAME --password-stdin"
-            '''
+						powershell -NoProfile -Command "$env:DOCKER_PASSWORD | docker login --username $env:DOCKER_USERNAME --password-stdin"
+					'''
+				}
+			}
         }
-    }
-}
-        }
-
-      
     }
 }
