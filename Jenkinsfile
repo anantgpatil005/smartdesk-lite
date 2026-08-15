@@ -76,23 +76,37 @@ pipeline {
                 passwordVariable: 'DOCKER_PASSWORD'
             )
         ]) {
-            bat '''
-                echo ==========================
-                echo USERNAME TEST
-                echo ==========================
-                echo Username: [%DOCKER_USERNAME%]
+             bat '''
+            echo ==========================
+            echo WINDOWS USER
+            echo ==========================
+            whoami
 
-                echo ==========================
-                echo PASSWORD TEST
-                echo ==========================
-                if defined DOCKER_PASSWORD (
-                    echo Password variable EXISTS
-                ) else (
-                    echo Password variable DOES NOT EXIST
-                )
+            echo.
+            echo ==========================
+            echo DOCKER EXECUTABLE
+            echo ==========================
+            where docker
+            docker --version
 
-                powershell -NoProfile -Command "$p=$env:DOCKER_PASSWORD; Write-Host ('Password length = ' + $p.Length)"
-            '''
+            echo.
+            echo ==========================
+            echo DOCKER CONTEXT
+            echo ==========================
+            docker context show
+
+            echo.
+            echo ==========================
+            echo DOCKER CONFIG
+            echo ==========================
+            echo DOCKER_CONFIG=[%DOCKER_CONFIG%]
+
+            echo.
+            echo ==========================
+            echo DOCKER INFO
+            echo ==========================
+            docker info
+        '''
         }
             }
         }
