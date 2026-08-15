@@ -73,26 +73,30 @@ pipeline {
         }
 
         stage('Push Docker Images') {
-			steps {
-				withCredentials([
-					usernamePassword(
-						credentialsId: 'dockerhub-credentials',
-						usernameVariable: 'DOCKER_USERNAME',
-						passwordVariable: 'DOCKER_PASSWORD'
-					)
-				]) {
-					// Uses PowerShell Write-Output to cleanly pipe the PAT into stdin
-					powershell 'Write-Output $env:DOCKER_PASSWORD | docker login -u $env:DOCKER_USERNAME --password-stdin'
+    steps {
+        withCredentials([
+            usernamePassword(
+                credentialsId: 'dockerhub-credentials',
+                usernameVariable: 'DOCKER_USERNAME',
+                passwordVariable: 'DOCKER_PASSWORD'
+            )
+        ]) {
 
-					bat 'docker tag smartdesk-ticket-service:latest %DOCKER_USERNAME%/smartdesk-ticket-service:latest'
-					bat 'docker tag smartdesk-notification-service:latest %DOCKER_USERNAME%/smartdesk-notification-service:latest'
-					bat 'docker tag smartdesk-frontend:latest %DOCKER_USERNAME%/smartdesk-frontend:latest'
+            powershell '''
+                $env:DOCKER_PASSWORD | docker login `
+                    --username $env:DOCKER_USERNAME `
+                    --password-stdin
+            '''
 
-					bat 'docker push %DOCKER_USERNAME%/smartdesk-ticket-service:latest'
-					bat 'docker push %DOCKER_USERNAME%/smartdesk-notification-service:latest'
-					bat 'docker push %DOCKER_USERNAME%/smartdesk-frontend:latest'
-				}
-			}
-		}
+            bat 'docker tag smartdesk-ticket-service:latest %DOCKER_USERNAME%/smartdesk-ticket-service:latest'
+            bat 'docker tag smartdesk-notification-service:latest %DOCKER_USERNAME%/smartdesk-notification-service:latest'
+            bat 'docker tag smartdesk-frontend:latest %DOCKER_USERNAME%/smartdesk-frontend:latest'
+
+            bat 'docker push %DOCKER_USERNAME%/smartdesk-ticket-service:latest'
+            bat 'docker push %DOCKER_USERNAME%/smartdesk-notification-service:latest'
+            bat 'docker push %DOCKER_USERNAME%/smartdesk-frontend:latest'
+        }
+    }
+}
     }
 }
