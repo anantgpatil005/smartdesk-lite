@@ -69,34 +69,34 @@ pipeline {
             steps {
                 bat 'docker --version'
                 bat 'docker ps'
-            }
-        }
-
-        stage('Push Docker Images') {
-    steps {
-        withCredentials([
+				withCredentials([
             usernamePassword(
                 credentialsId: 'dockerhub-credentials',
                 usernameVariable: 'DOCKER_USERNAME',
                 passwordVariable: 'DOCKER_PASSWORD'
             )
         ]) {
+            bat '''
+                echo ==========================
+                echo USERNAME TEST
+                echo ==========================
+                echo Username: [%DOCKER_USERNAME%]
 
-            powershell '''
-                $env:DOCKER_PASSWORD | docker login `
-                    --username $env:DOCKER_USERNAME `
-                    --password-stdin
+                echo ==========================
+                echo PASSWORD TEST
+                echo ==========================
+                if defined DOCKER_PASSWORD (
+                    echo Password variable EXISTS
+                ) else (
+                    echo Password variable DOES NOT EXIST
+                )
+
+                powershell -NoProfile -Command "$p=$env:DOCKER_PASSWORD; Write-Host ('Password length = ' + $p.Length)"
             '''
-
-            bat 'docker tag smartdesk-ticket-service:latest %DOCKER_USERNAME%/smartdesk-ticket-service:latest'
-            bat 'docker tag smartdesk-notification-service:latest %DOCKER_USERNAME%/smartdesk-notification-service:latest'
-            bat 'docker tag smartdesk-frontend:latest %DOCKER_USERNAME%/smartdesk-frontend:latest'
-
-            bat 'docker push %DOCKER_USERNAME%/smartdesk-ticket-service:latest'
-            bat 'docker push %DOCKER_USERNAME%/smartdesk-notification-service:latest'
-            bat 'docker push %DOCKER_USERNAME%/smartdesk-frontend:latest'
         }
-    }
-}
+            }
+        }
+
+      
     }
 }
